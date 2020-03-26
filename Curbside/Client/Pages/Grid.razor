@@ -1,0 +1,97 @@
+﻿@page "/grid"
+
+@using Curbside.Shared
+@using Curbside.Services
+ 
+@inject BusinessesService BusinessesService
+@inject SpinnerState State
+
+<div class="container-fluid">
+    <div class='row my-4'>
+        <div class='col-12'>
+            <TelerikGrid Data="@businesses" Height="550px" FilterMode="@GridFilterMode.FilterMenu"
+                         @bind-SelectedItems="State.SelectedBusinesses" SelectionMode="GridSelectionMode.Multiple"
+                         Sortable="true" Pageable="true" PageSize="20" Groupable="true"
+                         OnUpdate="@UpdateHandler" OnDelete="@DeleteHandler" OnCreate="@CreateHandler" EditMode="@GridEditMode.Inline">
+                <GridColumns>
+                    <GridCheckboxColumn></GridCheckboxColumn>
+                    <GridColumn Field="Id" Title="Id" Width="100px" Editable="false" Groupable="false" />
+                    <GridColumn Field="@nameof(Business.Name)"></GridColumn>
+                    <GridColumn Field="@nameof(Business.Address)"></GridColumn>
+                    <GridColumn Field="@nameof(Business.HoursOfOperation)"></GridColumn>
+                    <GridColumn Field="@nameof(Business.Phone)"></GridColumn>
+                    <GridColumn Field="@nameof(Business.Url)"></GridColumn>
+                    <GridCommandColumn>
+                        <GridCommandButton Command="Save" Icon="@IconName.Save" ShowInEdit="true">Update</GridCommandButton>
+                        <GridCommandButton Command="Edit" Icon="@IconName.Edit" Primary="true">Edit</GridCommandButton>
+                        <GridCommandButton Command="Delete" Icon="@IconName.Delete">Delete</GridCommandButton>
+                        <GridCommandButton Command="Cancel" Icon="@IconName.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+                    </GridCommandColumn>
+                </GridColumns>
+                <GridToolBar>
+                    <GridCommandButton Command="Add" Icon="@IconName.Plus" Primary="true">Add Business</GridCommandButton>
+                </GridToolBar>
+            </TelerikGrid>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Business> businesses { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetBusinesses();
+    }
+
+    async Task GetBusinesses()
+    {
+        businesses = await BusinessesService.GetBusinessesListAsync();
+    }
+
+    // Sample CUD operations below that call a service
+    // they also update the local view data - this is required when the grid data is not tied
+    // directly to an IQueriable that fetches from an EF context (possible only in server blazor)
+    // this sample uses the item from the grid immediately, but in a real app
+    // you may return an updated/inserted/deleted item data from the service and use that instead
+    // or add code to fetch all the grid data anew (which might be a performance hit but for data that updates often may be helpful)
+
+    public async Task DeleteHandler(GridCommandEventArgs args)
+    {
+        Business currItem = args.Item as Business;
+
+        await BusinessesService.DeleteForecastAsync(currItem);
+
+        // update the view data
+        businesses.Remove(currItem);
+    }
+
+    public async Task CreateHandler(GridCommandEventArgs args)
+    {
+        Business currItem = args.Item as Business;
+
+        await BusinessesService.InsertForecastAsync(currItem);
+
+        // update the view data
+        currItem.Id = businesses.Count + 1;
+        businesses.Insert(0, currItem);
+    }
+
+    public async Task UpdateHandler(GridCommandEventArgs args)
+    {
+        Business currItem = args.Item as Business;
+
+        await BusinessesService.UpdateForecastAsync(currItem);
+
+        // update the view data
+        var matchingItem = businesses.FirstOrDefault(c => c.Id == currItem.Id);
+        if (matchingItem != null)
+        {
+            matchingItem.Name = currItem.Name;
+            matchingItem.Address = currItem.Address;
+            matchingItem.HoursOfOperation = currItem.HoursOfOperation;
+            matchingItem.Phone = currItem.Phone;
+            matchingItem.Url = currItem.Url;
+        }
+    }
+}

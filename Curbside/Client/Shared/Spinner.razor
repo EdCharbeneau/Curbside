@@ -1,0 +1,28 @@
+﻿@using Curbside.Services
+@inject SpinnerState State
+@inject IJSRuntime js
+
+<div class="spinner-wrapper">
+    <h2>Our Lunch</h2>
+    <div class="wheel-container">
+        <ul class="wheel">
+            @foreach (var item in State.SelectedBusinesses)
+            {
+                <li class="item" title="@item.Name"></li>
+            }
+        </ul>
+        <div type="button" class="spin-button">LUNCH!</div>
+    </div>
+</div>
+
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await js.InvokeVoidAsync("spinnerInit");
+        }
+    }
+
+}

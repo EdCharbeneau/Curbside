@@ -1,0 +1,200 @@
+﻿// @import 'trigonometry'; https://codepen.io/NyX/pen/dYvymM
+@import url('https://fonts.googleapis.com/css?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Pacifico&display=swap');
+
+:root {
+    --items: 12;
+    --wheel: 600px;
+    --item-side-tangent: 0.27;
+    --half-wheel: calc(var(--wheel) / 2);
+    // --item-side-tangent: ceil(tan(360deg / var(--items) / 2);
+    // --item-side: calc(var(--item-side-tangent) * calc(var(--wheel) / 2));
+    --item-side: calc(var(--item-side-tangent) * var(--half-wheel));
+    --handle: calc(var(--wheel) / 4);
+    --notch: calc(var(--handle) / 4);
+}
+
+.spinner-wrapper {
+    // tan(θ) = opposite / adjacent
+    // adjacent * tan(theta) = opposite
+    // --item-side: 53.5898px;
+
+
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: 'VT323', monospace;
+        font-size: 30px;
+        font-weight: 900;
+        list-style: none;
+    }
+
+    body {
+        min-height: 100vh;
+        background-color: #eaeaea;
+    }
+
+    h2 {
+        font-size: 200px;
+        font-family: 'Pacifico', cursive;
+        position: fixed;
+        transform: rotate(-30deg);
+        text-align: center;
+    }
+
+    .wheel-container {
+        position: relative;
+        margin-top: 200px;
+    }
+
+    .wheel {
+        border: 8px solid white;
+        box-shadow: 0px 0px 3px 2px #ccc;
+        z-index: 1;
+        position: relative;
+        margin: 0 auto;
+        width: var(--wheel);
+        height: var(--wheel);
+        border-radius: 50%;
+        overflow: hidden;
+        transition: transform 1s ease-in-out;
+    }
+
+    .item {
+        --color: hsl(80, 60%, var(--lightness));
+        // --lightness: calc(10% + 50% / var(--items) * var(--i));
+        // 60 - 10
+        --lightness: calc(60% - 50% / var(--items) * var(--i));
+        --rotation: calc(360deg / var(--items) * var(--i)); // moved rotate() down to line66
+        top: 0;
+        left: calc(50% - var(--item-side));
+        z-index: 1;
+        position: absolute;
+        width: 1px;
+        height: 0;
+        display: grid;
+        justify-content: center;
+        border: 0 solid transparent;
+        border-top-color: var(--color);
+        border-width: var(--half-wheel) var(--item-side) 0;
+        transform: rotate(var(--rotation));
+        transform-origin: center bottom;
+
+        &::before {
+            bottom: calc(var(--handle) / 2);
+            position: absolute;
+            padding: 10px 0;
+            height: calc(var(--half-wheel) - var(--handle) / 2);
+            box-sizing: border-box;
+            content: attr(title);
+            color: white;
+            overflow: hidden;
+            text-orientation: upright;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            writing-mode: vertical-lr;
+        }
+
+        &:nth-child(1) {
+            --i: 01;
+        }
+
+        &:nth-child(2) {
+            --i: 02;
+        }
+
+        &:nth-child(3) {
+            --i: 03;
+        }
+
+        &:nth-child(4) {
+            --i: 04;
+        }
+
+        &:nth-child(5) {
+            --i: 05;
+        }
+
+        &:nth-child(6) {
+            --i: 06;
+        }
+
+        &:nth-child(7) {
+            --i: 07;
+        }
+
+        &:nth-child(8) {
+            --i: 08;
+        }
+
+        &:nth-child(9) {
+            --i: 09;
+        }
+
+        &:nth-child(10) {
+            --i: 10;
+        }
+
+        &:nth-child(11) {
+            --i: 11;
+        }
+
+        &:nth-child(12) {
+            --i: 12;
+        }
+    }
+
+
+    .spin-button {
+        text-align: center;
+        font-size: 24px;
+        line-height: var(--handle);
+        color: rgba(0,0,0,0.25);
+        text-shadow: 0 1px 0 white, 0 -1px 0 rgba(0, 0, 0, 0.2);
+        top: 50%;
+        left: 50%;
+        z-index: 2;
+        position: absolute;
+        width: var(--handle);
+        height: var(--handle);
+        background: #f0f0f0;
+        border-radius: 50%;
+        box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 0 0 1px white inset;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        transition: background 200ms ease;
+        -webkit-appearance: none;
+
+        &::before {
+            //todo vv fix this grossness
+            top: calc(50% - calc(var(--handle) / 2) - calc(var(--notch) / 2));
+            left: 50%;
+            position: absolute;
+            content: '';
+            border: calc(var(--notch) / 2) solid transparent;
+            border-bottom-color: #f0f0f0;
+            border-bottom-width: var(--notch);
+            transform: translate(-50%, -50%);
+            transition: border 200ms ease;
+        }
+
+        &:hover {
+            background: white;
+
+            &::before {
+                border-bottom-color: white;
+            }
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+.background {
+    // and now for the background!!
+    background: -webkit-linear-gradient(315deg, hsla(110.47, 99.46%, 41.12%, 1) 0%, hsla(110.47, 99.46%, 41.12%, 0) 70%), -webkit-linear-gradient(65deg, hsla(61.84, 92.56%, 40.06%, 1) 10%, hsla(61.84, 92.56%, 40.06%, 0) 80%), -webkit-linear-gradient(135deg, hsla(299.85, 96.22%, 46.29%, 1) 15%, hsla(299.85, 96.22%, 46.29%, 0) 80%), -webkit-linear-gradient(205deg, hsla(311.2, 95.2%, 40.84%, 1) 100%, hsla(311.2, 95.2%, 40.84%, 0) 70%);
+    background: linear-gradient(135deg, hsla(110.47, 99.46%, 41.12%, 1) 0%, hsla(110.47, 99.46%, 41.12%, 0) 70%), linear-gradient(25deg, hsla(61.84, 92.56%, 40.06%, 1) 10%, hsla(61.84, 92.56%, 40.06%, 0) 80%), linear-gradient(315deg, hsla(299.85, 96.22%, 46.29%, 1) 15%, hsla(299.85, 96.22%, 46.29%, 0) 80%), linear-gradient(245deg, hsla(311.2, 95.2%, 40.84%, 1) 100%, hsla(311.2, 95.2%, 40.84%, 0) 70%);
+}
